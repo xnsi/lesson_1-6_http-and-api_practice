@@ -4,6 +4,7 @@ const applicationList = document.querySelector("#application-list")
 const emptyState = document.querySelector("#empty-state")
 const requestStatus = document.querySelector("#request-status")
 const reloadButton = document.querySelector("#reload-button")
+const topicFilter = document.querySelector("#topic-filter")
 
 const applicationForm = document.querySelector("#application-form")
 const submitButton = document.querySelector("#submit-button")
@@ -79,7 +80,13 @@ async function loadApplications() {
 
   try {
     // TODO 2.1: выполните GET-запрос к API_URL и сохраните Response.
-    const response = await fetch(API_URL)
+    const url = new URL(API_URL)
+
+    if (topicFilter.value) {
+      url.searchParams.set("topic", topicFilter.value)
+    }
+
+    const response = await fetch(url)
     
     // TODO 4.1: если response.ok равен false, выбросьте Error со статусом.
     if (!response.ok) {
@@ -157,6 +164,7 @@ applicationForm.addEventListener("submit", async (event) => {
 })
 
 reloadButton.addEventListener("click", loadApplications)
+topicFilter.addEventListener("change", loadApplications)
 
 // Первый запрос выполняется сразу после загрузки страницы.
 loadApplications()
