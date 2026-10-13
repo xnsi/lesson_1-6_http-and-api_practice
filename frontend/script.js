@@ -70,12 +70,16 @@ async function loadApplications() {
 
   try {
     // TODO 2.1: выполните GET-запрос к API_URL и сохраните Response.
+    const response = await fetch(API_URL)
 
     // TODO 4.1: если response.ok равен false, выбросьте Error со статусом.
 
     // TODO 2.2: получите массив через await response.json().
+    const applications = await response.json()
 
     // TODO 2.3: выведите Response и полученные данные в Console.
+    console.log("Response:", response)
+    console.log("Applications:", applications)
 
     // TODO 3.5: передайте массив в renderApplications().
   } catch (error) {
