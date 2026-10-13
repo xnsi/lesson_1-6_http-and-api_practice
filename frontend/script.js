@@ -56,12 +56,21 @@ function createApplicationCard(application) {
 
 function renderApplications(applications) {
   // TODO 3.1: очистите предыдущие карточки через replaceChildren().
+  applicationList.replaceChildren()
 
   // TODO 3.2: если массив пуст, включите состояние empty и завершите функцию.
+  if (applications.length === 0) {
+    setListState("empty", "API вернул пустой массив");
+    return;
+  }
 
   // TODO 3.3: для каждой заявки создайте карточку и добавьте ее в список.
+  applications.forEach((application) => {
+    applicationList.append(createApplicationCard(application));
+  });
 
   // TODO 3.4: включите состояние success и покажите количество заявок.
+  setListState("success", `Получено заявок: ${applications.length}`)
 }
 
 async function loadApplications() {
@@ -71,7 +80,7 @@ async function loadApplications() {
   try {
     // TODO 2.1: выполните GET-запрос к API_URL и сохраните Response.
     const response = await fetch(API_URL)
-
+    
     // TODO 4.1: если response.ok равен false, выбросьте Error со статусом.
 
     // TODO 2.2: получите массив через await response.json().
@@ -82,6 +91,7 @@ async function loadApplications() {
     console.log("Applications:", applications)
 
     // TODO 3.5: передайте массив в renderApplications().
+    renderApplications(applications)
   } catch (error) {
     console.error("Не удалось загрузить заявки", error)
 
