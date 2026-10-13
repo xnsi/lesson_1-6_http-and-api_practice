@@ -112,18 +112,42 @@ applicationForm.addEventListener("submit", async (event) => {
   submitStatus.textContent = "Отправляем заявку…"
 
   // TODO 5.1: создайте FormData и объект application с name, email,
+  const formData = new FormData(applicationForm)
+
+  const application = {
+    name: formData.get("name"),
+    email: formData.get("email"),
+    topic: formData.get("topic"),
+    createdAt: new Date().toISOString(),
+  }
+
   // topic и createdAt. Значения получите методом formData.get().
 
   try {
     // TODO 5.2: выполните POST-запрос к API_URL.
     // Передайте method, заголовок Content-Type и JSON-строку в body.
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(application),
+    })
 
     // TODO 5.3: проверьте response.ok. При ошибке выбросьте Error.
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`)
+    }
 
     // TODO 5.4: получите созданный объект через response.json()
     // и выведите его в Console.
+    const createdApplication = await response.json()
+    console.log("Создана заявка:", createdApplication)
 
     // TODO 5.5: очистите форму, покажите успех и снова загрузите список.
+    applicationForm.reset()
+    submitStatus.textContent = `Заявка #${createdApplication.id} сохранена`
+    await loadApplications()
   } catch (error) {
     console.error("Не удалось отправить заявку", error)
     submitStatus.textContent = "Не удалось отправить заявку. Проверьте API и Network."
