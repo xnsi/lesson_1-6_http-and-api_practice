@@ -52,6 +52,37 @@ function createApplicationCard(application) {
   heading.append(name, id)
   card.append(heading, topic, email)
 
+  const deleteButton = document.createElement("button")
+  deleteButton.type = "button"
+  deleteButton.className = "button button--secondary"
+  deleteButton.textContent = "Удалить"
+
+  deleteButton.addEventListener("click", async () => {
+    deleteButton.disabled = true
+
+    try {
+      const response = await fetch(`${API_URL}/${application.id}`, {
+        method: "DELETE",
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`)
+      }
+
+      await loadApplications()
+    } catch (error) {
+      console.error("Не удалось удалить заявку", error)
+      setListState(
+        "error",
+        "Не удалось удалить заявку. Проверьте API и повторите запрос."
+      )
+    } finally {
+      deleteButton.disabled = false
+    }
+  })
+
+  card.append(deleteButton)
+
   return card
 }
 
