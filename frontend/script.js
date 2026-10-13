@@ -82,6 +82,9 @@ async function loadApplications() {
     const response = await fetch(API_URL)
     
     // TODO 4.1: если response.ok равен false, выбросьте Error со статусом.
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`)
+    }
 
     // TODO 2.2: получите массив через await response.json().
     const applications = await response.json()
@@ -96,6 +99,7 @@ async function loadApplications() {
     console.error("Не удалось загрузить заявки", error)
 
     // TODO 4.2: включите состояние error и покажите понятное сообщение.
+    setListState("error", "Не удалось загрузить заявки. Проверьте API и повторите запрос.")
   } finally {
     reloadButton.disabled = false
   }
