@@ -4,6 +4,7 @@ const applicationList = document.querySelector("#application-list")
 const emptyState = document.querySelector("#empty-state")
 const requestStatus = document.querySelector("#request-status")
 const reloadButton = document.querySelector("#reload-button")
+const topicFilter = document.querySelector("#topic-filter")
 
 const applicationForm = document.querySelector("#application-form")
 const submitButton = document.querySelector("#submit-button")
@@ -51,6 +52,37 @@ function createApplicationCard(application) {
   heading.append(name, id)
   card.append(heading, topic, email)
 
+  const deleteButton = document.createElement("button")
+  deleteButton.type = "button"
+  deleteButton.className = "button button--secondary"
+  deleteButton.textContent = "Удалить"
+
+  deleteButton.addEventListener("click", async () => {
+    deleteButton.disabled = true
+
+    try {
+      const response = await fetch(`${API_URL}/${application.id}`, {
+        method: "DELETE",
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`)
+      }
+
+      await loadApplications()
+    } catch (error) {
+      console.error("Не удалось удалить заявку", error)
+      setListState(
+        "error",
+        "Не удалось удалить заявку. Проверьте API и повторите запрос."
+      )
+    } finally {
+      deleteButton.disabled = false
+    }
+  })
+
+  card.append(deleteButton)
+
   return card
 }
 
@@ -79,7 +111,13 @@ async function loadApplications() {
 
   try {
     // TODO 2.1: выполните GET-запрос к API_URL и сохраните Response.
-    const response = await fetch(API_URL)
+    const url = new URL(API_URL)
+
+    if (topicFilter.value) {
+      url.searchParams.set("topic", topicFilter.value)
+    }
+
+    const response = await fetch(url)
     
     // TODO 4.1: если response.ok равен false, выбросьте Error со статусом.
     if (!response.ok) {
@@ -157,6 +195,7 @@ applicationForm.addEventListener("submit", async (event) => {
 })
 
 reloadButton.addEventListener("click", loadApplications)
+topicFilter.addEventListener("change", loadApplications)
 
 // Первый запрос выполняется сразу после загрузки страницы.
 loadApplications()
